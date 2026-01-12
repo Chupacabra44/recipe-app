@@ -3,7 +3,7 @@ import defaultImage from "../../assets/default-image.jpg";
 import "./Card.css";
 
 const Card = ({ recipes }) => {
-  console.log(recipes);
+  // console.log(recipes);
   const navigate = useNavigate();
 
   return (

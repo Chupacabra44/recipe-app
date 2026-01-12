@@ -7,15 +7,14 @@ import home from "../../assets/home.svg";
 
 const Home = () => {
   const [query, setQuery] = useState("");
-  const [selectedMeal, setSelectedMeal] = useState("breakfast");
+  const [selectedMeal, setSelectedMeal] = useState("Vegetarian");
   const [recipes, setRecipes] = useState(null);
+  const [category, setCategory] = useState([]);
 
   // const appId = process.env.REACT_APP_API_ID;
   // const appKey = process.env.REACT_APP_API_KEY;
 
   //https://developer.edamam.com/edamam-docs-recipe-api - doesn't work like before 2 years
-
-  const mealTypes = ["Breakfast", "Lunch", "Dinner", "Snack", "TeaTime"];
 
   const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`;
 
@@ -24,12 +23,18 @@ const Home = () => {
       const { data } = await axios(url);
       setRecipes(data.meals || []);
       console.log(data.meals);
+      const uniqueCategories = [
+        ...new Set(data.meals.map((meal) => meal.strCategory)),
+      ];
+      setCategory(uniqueCategories);
     } catch (error) {
       console.log(error);
     }
   };
 
-  console.log(recipes);
+  const filteredRecipes = selectedMeal
+    ? (recipes || []).filter((meal) => meal.strCategory === selectedMeal)
+    : recipes || [];
 
   // useEffect(() => {
   //   getData();
@@ -42,12 +47,12 @@ const Home = () => {
         setQuery={setQuery}
         selectedMeal={selectedMeal}
         setSelectedMeal={setSelectedMeal}
-        mealTypes={mealTypes}
+        category={category}
         getData={getData}
       />
       {!recipes && <img className="homeImg" src={home} alt="home" />}
       {recipes?.length === 0 && <h1>Sorry. Try Another Food Name</h1>}
-      {recipes?.length > 0 && <Card recipes={recipes} />}
+      {filteredRecipes?.length > 0 && <Card recipes={filteredRecipes} />}
     </div>
   );
 };
